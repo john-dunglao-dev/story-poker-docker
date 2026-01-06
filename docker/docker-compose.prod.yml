@@ -1,0 +1,16 @@
+services:
+  nestjs:
+    build:
+      context: ../
+      dockerfile: ./docker/builds/nestjs/Dockerfile
+    container_name: storypoker_nestjs_container
+    platform: linux/amd64
+    image: johnflorentinodev/storypoker-nestjs:$(GITHUB_SHA:-latest)
+
+  nginx:
+    build:
+      context: ../
+      dockerfile: ./docker/builds/nginx/Dockerfile
+    container_name: storypoker_nginx_container
+    platform: linux/amd64
+    image: johnflorentinodev/storypoker-nginx:$(GITHUB_SHA:-latest)

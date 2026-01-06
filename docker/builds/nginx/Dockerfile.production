@@ -1,0 +1,34 @@
+# ---------- frontend build stage ----------
+FROM node:24-alpine3.21 AS frontend-builder
+
+ARG VITE_API_BASE_URL
+ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
+
+WORKDIR /frontend
+
+# Copy package files
+COPY ./frontend/package.json ./
+COPY ./frontend/package-lock.json ./
+
+# Install dependencies
+RUN npm ci
+
+# Copy app source
+COPY ./frontend .
+
+# Build React app
+RUN npm run build
+
+# ---------- Nginx runtime stage ----------
+FROM nginx:1.29-alpine
+
+# Remove default static files
+RUN rm -rf /usr/share/nginx/html/*
+
+# Copy React and Vue build outputs into Nginx
+COPY --from=react-builder /react/dist /usr/share/nginx/html/react
+
+# Copy the templates into nginx templates
+COPY ./docker/builds/nginx/prod /etc/nginx/templates
+
+RUN nginx -t

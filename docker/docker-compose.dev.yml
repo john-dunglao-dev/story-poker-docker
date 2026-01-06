@@ -1,0 +1,74 @@
+services:
+
+  nginx:
+    image: nginx:1.29
+    container_name: storypoker_nginx_container
+    env_file:
+      - ./environments/nginx.env
+    # volumes:
+    #   - ./builds/nginx/templates/dev:/etc/nginx/templates:ro
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - application_network
+      - client_facing_network
+    depends_on:
+      - nestjs
+      - reactjs
+    
+  nestjs:
+    build:
+      context: ../
+      dockerfile: ./docker/builds/nestjs/Dockerfile.local
+    container_name: storypoker_nestjs_container
+    working_dir: /var/www/html
+    volumes:
+      - ./../api:/var/www/html
+    tty: true
+    stdin_open: true
+    networks:
+      - application_network
+      - client_facing_network
+    depends_on:
+      - mysql
+      - redis
+
+  reactjs:
+    build:
+      context: ../
+      dockerfile: ./docker/builds/reactjs/Dockerfile.local
+    container_name: storypoker_reactjs_container
+    working_dir: /var/www/html
+    volumes:
+      - ./../frontend:/var/www/html
+    tty: true
+    stdin_open: true
+    networks:
+      - client_facing_network
+  
+  mysql:
+    image: mysql:lts-oracle
+    container_name: storypoker_mysql_container
+    env_file:
+      - ./environments/mysql.env
+    volumes:
+      - ./data/mysql:/var/lib/mysql
+    networks:
+      - application_network
+
+  redis:
+    image: redis:8.2.1-alpine
+    container_name: storypoker_redis_container
+    env_file:
+      - ./environments/redis.env
+    volumes:
+      - ./data/redis:/data
+    networks:
+      - application_network
+
+networks:
+  application_network:
+    driver: bridge
+  client_facing_network:
+    driver: bridge

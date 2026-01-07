@@ -1,0 +1,9 @@
+[submodule "api/story-poker-nestjs"]
+	path = api/story-poker-nestjs
+	url = git@github.com:john-dunglao-dev/story-poker-nestjs.git
+[submodule "api"]
+	path = api
+	url = git@github.com:john-dunglao-dev/story-poker-nestjs.git
+[submodule "frontend"]
+	path = frontend
+	url = git@github.com:john-dunglao-dev/story-poker-react.git

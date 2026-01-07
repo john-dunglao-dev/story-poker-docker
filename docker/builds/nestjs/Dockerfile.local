@@ -10,4 +10,5 @@ RUN apk update && apk add --no-cache \
 # vitest is for unit testing
 RUN npm install -g \ 
     vite-bundle-analyzer \
-    vitest
+    vitest \
+    @nestjs/cli

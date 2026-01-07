@@ -5,8 +5,11 @@ services:
     container_name: storypoker_nginx_container
     env_file:
       - ./environments/nginx.env
-    # volumes:
-    #   - ./builds/nginx/templates/dev:/etc/nginx/templates:ro
+      - ./environments/nestjs.env
+      - ./environments/reactjs.env
+    working_dir: /etc/nginx
+    volumes:
+      - ./builds/nginx/templates/dev:/etc/nginx/templates:ro
     ports:
       - "80:80"
       - "443:443"
@@ -22,11 +25,12 @@ services:
       context: ../
       dockerfile: ./docker/builds/nestjs/Dockerfile.local
     container_name: storypoker_nestjs_container
+    env_file:
+      - ./environments/nestjs.env
     working_dir: /var/www/html
     volumes:
       - ./../api:/var/www/html
-    tty: true
-    stdin_open: true
+    command: npm run start:dev
     networks:
       - application_network
       - client_facing_network
@@ -39,11 +43,12 @@ services:
       context: ../
       dockerfile: ./docker/builds/reactjs/Dockerfile.local
     container_name: storypoker_reactjs_container
+    env_file:
+      - ./environments/reactjs.env
     working_dir: /var/www/html
     volumes:
       - ./../frontend:/var/www/html
-    tty: true
-    stdin_open: true
+    command: npm run dev
     networks:
       - client_facing_network
   

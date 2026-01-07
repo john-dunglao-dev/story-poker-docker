@@ -5,3 +5,38 @@ proxy_set_header X-Real-IP $remote_addr;
 proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
 proxy_set_header X-Forwarded-Proto $scheme;
 
+server {
+  listen 80;
+  listen [::]:80;
+  server_name storypoker.local www.storypoker.local;
+
+  client_max_body_size 100M;
+
+  location / {
+    proxy_pass http://reactjs:${PORT};
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection 'upgrade';
+  }
+
+  error_log /var/log/nginx/react-error.log;
+  access_log /var/log/nginx/react-access.log;
+}
+
+server {
+  listen 80;
+  listen [::]:80;
+  server_name api.storypoker.local www.api.storypoker.local;
+
+  client_max_body_size 100M;
+
+  location / {
+    proxy_pass http://nestjs:${API_PORT};
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection 'upgrade';
+  }
+
+  error_log /var/log/nginx/nestjs-error.log;
+  access_log /var/log/nginx/nestjs-access.log;
+}
